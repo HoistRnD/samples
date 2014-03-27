@@ -3,7 +3,11 @@
 <head>
 	<title>Microblog</title>
 	<link href="./css/style.css" rel="stylesheet" />
+	<script src="https://code.jquery.com/jquery-2.0.3.min.js"> </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"> </script>
+	<script src="./js/marked.js"> </script>
 	<script src="./js/app.js"> </script>
+	
 </head>
 
 <body>
@@ -32,60 +36,43 @@
 </nav> 
 
 <!--Page Body-->
-<div class="page">
-	<div class="comments-box">
-		<div class="container">
-			<a href="#" class="active">Write</a><a href="#">Preview</a>
-			<textarea>Write something here</textarea>
-			<input type="button" class="action" value="Post Status" />
-			<input type="button" value="Labels" />
-		</div>
-	</div>
-	<div class="container">
-		<div class="media attribution">
-			<a href="http://twitter.com/stubbornella" class="img profile">
-				<img src="./img/profile.jpg" />
-			</a>
-			<div class="bd">
-				<div class="comment">
-					<a class="name" href="#">Really Happy Chick</a>
-					I can't belive how ridiculously happy I am all the time, I think I must have a mental disorder as no person should feel this much joy.
+<div class="page-clip">
+	<div class="page">
+		<div class="comments-box">
+			<div class="container">
+				<a href="javascript:" id="write" class="mode active">Write</a><a href="javascript:" class="mode" id="preview" style="display:none;">Preview</a>
+				<textarea>Write something here</textarea>
+				<div id="content-preview" style="display:none;"></div>
+				<div id="comments-actions" style="display:none;">
+					<input type="button" class="action" value="Post Status" id="post-status" />
+					<!--<input type="button" value="Labels" />-->
 				</div>
-				<!--<img src="./img/team.png" alt="me" />-->
 			</div>
 		</div>
-		<div class="media attribution">
-			<a href="http://twitter.com/stubbornella" class="img profile">
-				<img src="./img/profile.jpg" />
-			</a>
-			<div class="bd">
-				<div class="comment">
-					<a class="name" href="#">Really Happy Chick</a>
-					I can't belive how ridiculously happy I am all the time, I think I must have a mental disorder as no person should feel this much joy.
-				</div>
-				<!--<img src="./img/team.png" alt="me" />-->
-			</div>
-		</div>
-		<div class="media attribution">
-			<a href="http://twitter.com/stubbornella" class="img profile">
-				<img src="./img/profile.jpg" />
-			</a>
-			<div class="bd">
-				<div class="comment">
-					<a class="name" href="#">Really Happy Chick</a>
-					I can't belive how ridiculously happy I am all the time, I think I must have a mental disorder as no person should feel this much joy.
-				</div>
-				<!--<img src="./img/team.png" alt="me" />-->
-			</div>
-		</div>
-	</div>
+		<div class="container" id="content-placeholder">
 
+		</div>
+
+	</div>
 </div>
 <!--/Page Body-->
 
 </div>
 
-
+<script type="text/template" id="post">
+	<div class="media attribution">
+		<a href="<%- user.profile_url %>" class="img profile">
+			<img src="<%- user.profile_image %>" />
+		</a>
+		<div class="bd">
+			<div class="comment">
+				<a class="name" href="#"><%- user.name %></a>
+				<%= post.text %>
+			</div>
+			<%= post.media %>
+		</div>
+	</div>
+</script>
 
 </body>
 
