@@ -88,7 +88,7 @@ body {
 }
 *, body, html {
 	font-size:16px;
-    font-family:"Lato";
+    font-family:"Lato", "Helvetica", sans-serif;
 }
 nav {
     position:absolute;
