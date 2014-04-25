@@ -3,7 +3,7 @@
 <head>
 	<title>Hurtle</title>
 	<link href="./css/hurtle.min.css" rel="stylesheet" />
-	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" />
 </head>
 
 <body>
@@ -93,7 +93,6 @@
 					<a class="name"><%- user.name %></a>
 					<div class="methods">
 						<%= (post.isEditable) ?
-							"<a class='js-edit-post action-link' data-post='" + post._id + "' href='javascript:'>Edit</a>" +
 							"<a class='js-delete-post action-link' data-post='" + post._id + "' href='javascript:'>Delete</a>" : "" %>
 					</div>
 				</div>
@@ -107,14 +106,6 @@
 </script>
 
 <script src="./js/hurtle.min.js"> </script>
-
-<!--<script src="./js/jquery-2.0.3.min.js"> </script>
-<script src="./js/underscore.min.js"> </script>
-<script src="./js/hoist.js"> </script>
-<script src="./js/helpers.js"> </script>
-<script src="./js/account.js"> </script>
-<script src="./js/marked.js"> </script>
-<script src="./js/app.js"> </script>-->
 
 </body>
 
