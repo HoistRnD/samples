@@ -1,18 +1,9 @@
 <html>
 
 <head>
-	<title>Microblog</title>
-	<link href="./css/style.css" rel="stylesheet" />
-	<script src="https://code.jquery.com/jquery-2.0.3.min.js"> </script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"> </script>
-	<script src="https://code.hoi.io/hoist.js"> </script>
-	<script src="./js/helpers.js"> </script>
-	<script src="./js/account.js"> </script>
-	<script src="./js/marked.js"> </script>
-	<script src="./js/app.js"> </script>
-	<script type="text/javascript" src="//use.typekit.net/lei3vvm.js"></script>
-	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-
+	<title>Hurtle</title>
+	<link href="./css/hurtle.min.css" rel="stylesheet" />
+	<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" />
 </head>
 
 <body>
@@ -27,9 +18,9 @@
 		<nav>
 			<form name="login">
 				<h1>Login</h1>
-				<input type="text" name="username" placeholder="Username" />
+				<input type="text" name="username" placeholder="Email Address" />
 				<input type="password" name="password" placeholder="Password" />
-				<input type="submit" value="Log in" />
+				<input type="submit" value="Log in" id="login-button" />
 			</form>
 		</nav>
 		<div class="page-clip">
@@ -41,26 +32,29 @@
 					<input type="password" name="signupPassword" placeholder="Password" />
 					<label>Profile Photo</label>
 					<input type="file" name="profilePhoto" />
-					<input type="submit" value="Signup" />
+					<input type="submit" value="Signup" id="signup-button" />
 				</form>
 			</div>
 		</div>
 	</div>
 </script>
 
-<script type="text/template" id="page_navigation">
+<script type="text/template" id="page_structure">
 	<nav>
 		<div class="content">
-			<h2>Hi <%-member.name%>, <a href="javascript:" class="light-link js-logout">Logout</a></h2>
-			<div class="advertisement">
-				<span class="headline">This app was built on</span>
-				<a href="http://hoistapps.com/" class="logo"></a>
-				<div class="link">
-					<a href="https://github.com/hoist/micro-blog">Click here to download from Github</a>
-				</div>
-			</div>
 		</div>
 	</nav>
+</script>
+
+<script type="text/template" id="page_navigation">
+	<h2>Hi <%-member.name%>, <a href="javascript:" class="light-link js-logout">Logout</a></h2>
+	<div class="advertisement">
+		<span class="headline">This app was built on</span>
+		<a href="http://hoistapps.com/" class="logo"></a>
+		<div class="link">
+			<a href="https://github.com/hoist/micro-blog">Click here to download from Github</a>
+		</div>
+	</div>
 </script>
 
 <script type="text/template" id="page_body">
@@ -78,26 +72,49 @@
 				</div>
 			</div>
 			<div class="container" id="content-placeholder">
-
+				<div class="loading"><img src="img/loader.gif" /></div>
 			</div>
 		</div>
 	</div>
 </script>
 
+<script type="text/template" id="edit_post">
+	<textarea><%=post%></textarea>
+	<input type="button" value="Save" />
+</script>
+
 <script type="text/template" id="post">
-	<div class="media attribution">
-		<a class="img profile">
-			<img src="<%- user.profile_image %>" />
+	<div class="media attribution" data-post="<%= post._id %>">
+		<a class="img profile" data-profile="<%= user.id %>">
 		</a>
 		<div class="bd">
 			<div class="comment">
-				<a class="name"><%- user.name %></a>
-				<%= post.text %>
+				<div class="meta">
+					<a class="name"><%- user.name %></a>
+					<div class="methods">
+						<%= (post.isEditable) ?
+							"<a class='js-edit-post action-link' data-post='" + post._id + "' href='javascript:'>Edit</a>" +
+							"<a class='js-delete-post action-link' data-post='" + post._id + "' href='javascript:'>Delete</a>" : "" %>
+					</div>
+				</div>
+				<div class="post-content">
+					<%= post.markedDownText %>
+				</div>
 			</div>
 			<%= post.media %>
 		</div>
 	</div>
 </script>
+
+<script src="./js/hurtle.min.js"> </script>
+
+<!--<script src="./js/jquery-2.0.3.min.js"> </script>
+<script src="./js/underscore.min.js"> </script>
+<script src="./js/hoist.js"> </script>
+<script src="./js/helpers.js"> </script>
+<script src="./js/account.js"> </script>
+<script src="./js/marked.js"> </script>
+<script src="./js/app.js"> </script>-->
 
 </body>
 

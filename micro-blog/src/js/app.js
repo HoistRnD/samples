@@ -62,7 +62,8 @@ var App = function() {
 			$(".mode").removeClass("active");
 			$("#preview").addClass("active");
 			$("textarea").hide();
-			$("#content-preview").show().html(marked($("textarea").val()));
+			var c = strip($("textarea").val());
+			$("#content-preview").show().html(marked(strip($("textarea").val())));
 		} else {
 			$(".mode").removeClass("active");
 			$("#write").addClass("active");
@@ -78,7 +79,7 @@ var App = function() {
 		$("textarea").val("Write something here");
 
 		var post = {
-			text: marked(content),
+			text: strip(content),
 			media: "",
 			ownerId: app.member.id
 		};
@@ -106,19 +107,74 @@ var App = function() {
 
 	};
 
+	this.loadPosts = function(success) {
+
+		app._posts.get(function(res) {
+			//Store the posts in the app
+			app.posts = res;
+			$(".loading").remove();
+			//Loop through the posts to draw them
+			_.each(res, function(r) {
+				app.drawPost(r);
+			}, this);
+			success();
+		});
+
+	};
+
 	this.drawPost = function(post) {
 
 		//making it one level deep to make underscore templates easier
 		//to work with
 		post.post = post;
+		post.post.markedDownText = marked(post.post.text);
 		//Get the user from the members array
 		post.user = this.getUser(post.ownerId) || {};
+		post.isEditable = post.ownerId === app.member.id;
 
 		var template = _.template($("#post").html());
 		var post_html = template(post);
 		$("#content-placeholder").prepend(post_html);
 
 	};
+
+	this.editStatus = function() {
+
+		var id = $(this).data("post");
+		var post =_(app.posts).where({_id: id})[0];
+		var el = $(".media[data-post='" + id + "'] .post-content");
+		var editPostTemplate = _.template($("#edit_post").html());
+		el.html(editPostTemplate({post: post.text}));
+
+
+		//on edit
+			//add an 'edited' class
+		//on blur
+			//if it hasn't changed, then kill the save
+			//if it has changed, then do nothing
+		//on save
+			//save it
+		//on cancel
+			//revert it
+
+
+	};
+
+	this.deleteStatus = function() {
+
+		var c = confirm("Are you sure you want to delete this post?");
+		if(c) {
+			//get the id
+			var id = $(this).data("post");
+			//delete the post
+			$(".media[data-post='"+ id +"']").remove();
+			//delete from the app
+			app._posts.remove(id);
+
+		}
+
+	};
+
 
 	this.attachEvents = function() {
 		//attach event handlers
@@ -132,8 +188,14 @@ var App = function() {
 		$("#post-status")
 			.on("click", this.postStatus);
 
-		$(".js-logout")
-			.on("click", this.logout);
+		$("body")
+			.on("click", ".js-edit-post", this.editStatus);
+
+		$("body")
+			.on("click", ".js-delete-post", this.deleteStatus);
+
+		$("body")
+			.on("click", ".js-logout", this.logout);
 	};
 
 	//The Hoist "Data Manager" doesn't store the result of a collection
@@ -149,59 +211,37 @@ var App = function() {
 //Start Running the Application
 App.prototype.start = function(member) {
 
-	$("#content").html("<h1>Loading</h1>");
+	var structure = _.template($("#page_structure").html()),
+			body = _.template($("#page_body").html()),
+			navigation = _.template($("#page_navigation").html()),
+			fin;
 
 	this.member = member;
 
-	//draw the content on the page
-	var nav = _.template($("#page_navigation").html());
-	var body = _.template($("#page_body").html());
+	//Draw the page content
+	$("#content").html(structure()).append(body());
+
 
 	//Get the members
 	app._members.get(function(res) {
+
+		$("nav .content").append(navigation(app));
+
 		//Store the members in the app
 		app.members = res;
 		//get the member who is just logged in
 		app.member.name = _.find(app.members, function(m) {
 			return m.id === app.member.id;
 		}).name;
-		$("#content").html(nav(app)).append(body());
+
+		//Attach event handlers
 		app.attachEvents();
-		var c = 0;
-		var fin = function() {
-			c--;
-			if(c===0) {
-				//Get the posts
-				app._posts.get(function(res) {
-					//Store the posts in the app
-					app.posts = res;
-					//Loop through the posts to draw them
-					_.each(res, function(r) {
-						app.drawPost(r);
-					}, this);
-				});
-			}
-		};
-		//load the profile images
-		_.each(app.members, function(m) {
-			if(m.emailAddress) {
-				c++;
-				Hoist.file(m.emailAddress, function(blob) {
-						//convert blob to an image url
 
-					   var reader = new FileReader;
-
-					   reader.onload = function() {
-					     var blobAsDataUrl = reader.result;
-					     m.profile_image = blobAsDataUrl;
-							fin();
-					   };
-
-					   reader.readAsDataURL(blob);
-
-				}, fin);
-			}
+		app.loadPosts(function() {
+			account.loadProfileImages(app.members);
 		});
+
+
 	});
 
 
@@ -214,6 +254,10 @@ App.prototype.login = function() {
 	$("#content").html(_.template($("#login").html())());
 
 	$("form[name='login']").on("submit", function(evt) {
+
+		//Kill the login button
+		$("#login-button").attr("disabled", "disabled");
+
 		evt.preventDefault();
 
 		account.login(
@@ -221,6 +265,10 @@ App.prototype.login = function() {
 			$("input[name='password']").val(),
 			function(member) {
 				app.start(member);
+			},
+			function() {
+				alert("Sorry, you can't come in here.");
+				$("#login-button").removeAttr("disabled");
 			}
 		);
 
@@ -231,13 +279,23 @@ App.prototype.login = function() {
 
 		evt.preventDefault();
 
+		//Kill the login button
+		$("#signup-button").attr("disabled", "disabled");
+
 		account.new(
 			$("input[name='name']").val(),
 			$("input[name='emailAddress']").val(),
 			$("input[name='signupPassword']").val(),
 			$("input[name='profilePhoto']"),
 			function(member) {
+
 				app.start();
+
+			}, function(message) {
+
+				alert(message || "Signup failed, sorry.");
+				$("#signup-button").removeAttr("disabled");
+
 			}
 		)
 
