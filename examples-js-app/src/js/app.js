@@ -1,3 +1,5 @@
+var app, account;
+
 $(function() {
 
 	var settingsLocation = window.location.href.indexOf("localhost") !== -1 ? "./hoist.json" : "/settings";
@@ -6,14 +8,13 @@ $(function() {
 
 		Hoist.apiKey(settings.apiKey);
 
-		//Application
-		window.app = new App();
+		account = new AccountManager();
 
 		//If logged in, start the app, or show the login screen
 		Hoist.status(function(member) {
-			app.start(member);
+			app = new App(member);
 		}, function() {
-			app.login();
+			account.login();
 		});
 
 	});
@@ -22,149 +23,35 @@ $(function() {
 
 var App = function() {
 
-	this.logout = function() {
-		Hoist.logout(function() {
-			app.login();
-		});
-	};
+	//Load Modules
+	this.module = new Module();
 
-	//Methods
-	this.methodName = function() {
-		console.log("Running an application Method");
-	};
+	//Store your own copy of the results to work with
+	this._objType = Hoist("objecttype");
+	this.objType;
 
+	//Precompile Templates
+	this.memberTemplate = _.template($("#template").html());
 
-	this.attachEvents = function() {
-		//attach event handlers
-		$("textarea")
-			.on("focus", this.focusTextarea)
-			.on("blur", this.blurTextarea);
-
-		$(".mode")
-			.on("click", this.changeMode);
-
-		$("#post-status")
-			.on("click", this.postStatus);
-
-		$("body")
-			.on("click", ".js-edit-post", this.editStatus);
-
-		$("body")
-			.on("click", ".js-delete-post", this.deleteStatus);
-
-		$("body")
-			.on("click", ".js-logout", this.logout);
-	};
-
-	//The Hoist "Data Manager" doesn't store the result of a collection
-	//on get, so we have two separate objects to update
-	this._posts = Hoist("posts");
-	this.posts;
-
-	this._members = Hoist("members");
-	this.members;
-
-};
-
-//Start Running the Application
-App.prototype.start = function(member) {
-
-	var structure = _.template($("#page_structure").html()),
-			body = _.template($("#page_body").html()),
-			navigation = _.template($("#page_navigation").html()),
-			fin;
-
+	//Save your member
 	this.member = member;
 
-	//Draw the page content
-	$("#content").html(structure()).append(body());
+	//Attach event handlers
+	app.attachEvents();
 
-
-	//Get the members
-	app._members.get(function(res) {
-
-		$("nav .content").append(navigation(app));
-
-		//Store the members in the app
-		app.members = res;
-		//get the member who is just logged in
-		app.member.name = _.find(app.members, function(m) {
-			return m.id === app.member.id;
-		}).name;
-
-		//Attach event handlers
-		app.attachEvents();
-
-		app.loadPosts(function() {
-			account.loadProfileImages(app.members);
-		});
-
-
-	});
-
+	//Run application Logic
+	this.posts = this.getPosts();
 
 };
 
-//Draw the Login Form
-App.prototype.login = function() {
+_.extend(App.prototype, {
+	getPosts: function(options) {
+		//run my get posts method
+		return [];
+	}
+});
 
-	//Load the login template
-	$("#content").html(_.template($("#login").html())());
-
-	$("form[name='login']").on("submit", function(evt) {
-
-		//Kill the login button
-		$("#login-button").attr("disabled", "disabled");
-
-		evt.preventDefault();
-
-		account.login(
-			$("input[name='username']").val(),
-			$("input[name='password']").val(),
-			function(member) {
-				app.start(member);
-			},
-			function() {
-				alert("Sorry, you can't come in here.");
-				$("#login-button").removeAttr("disabled");
-			}
-		);
-
-		return false;
-	});
-
-	$("form[name='signup']").on("submit", function(evt) {
-
-		evt.preventDefault();
-
-		//Kill the login button
-		$("#signup-button").attr("disabled", "disabled");
-
-		account.new(
-			$("input[name='name']").val(),
-			$("input[name='emailAddress']").val(),
-			$("input[name='signupPassword']").val(),
-			$("input[name='profilePhoto']"),
-			function(member) {
-
-				app.start();
-
-			}, function(message) {
-
-				alert(message || "Signup failed, sorry.");
-				$("#signup-button").removeAttr("disabled");
-
-			}
-		)
-
-		return false;
-
-	});
-
-
-}
-
-//Helpers
+//Your Helpers
 function strip(html)
 {
 	var tmp = document.createElement("DIV");
