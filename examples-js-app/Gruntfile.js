@@ -4,7 +4,7 @@ module.exports = function (grunt) {
         cssmin: {
             css: {
                 src: ['src/css/style.css'],
-                dest: 'css/hurtle.min.css'
+                dest: 'css/<%= pkg.libName %>.min.css'
             }
         },
         uglify: {
@@ -14,12 +14,12 @@ module.exports = function (grunt) {
                 banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
                   'Hoist Apps Limited */\r\n',
 
-                sourceMap: 'js/hurtle.min.map.js',
-                sourceMappingURL: 'hurtle.min.map.js'
+                sourceMap: 'js/<%= pkg.libName %>.min.map.js',
+                sourceMappingURL: '<%= pkg.libName %>.min.map.js'
 
               },
               files: {
-                  'js/hurtle.min.js': [
+                  'js/<%= pkg.libName %>.min.js': [
                     'src/js/jquery-2.0.3.min.js',
                     'src/js/underscore.min.js',
                     'src/js/hoist.js',

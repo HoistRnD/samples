@@ -47,7 +47,7 @@
 </script>
 
 <script type="text/template" id="page_navigation">
-	<h2>Hi <%-member.name%>, <a href="javascript:" class="light-link js-logout">Logout</a></h2>
+	<h2>Hi <%- member.name %>, <a href="javascript:" class="light-link js-logout">Logout</a></h2>
 	<div class="advertisement">
 		<span class="headline">This app was built on</span>
 		<a href="http://hoistapps.com/" class="logo"></a>
@@ -92,6 +92,7 @@
 				<div class="meta">
 					<a class="name"><%- user.name %></a>
 					<div class="methods">
+						<a href="#<%=post._id" class="action-link">Link</a>
 						<%= (post.isEditable) ?
 							"<a class='js-delete-post action-link' data-post='" + post._id + "' href='javascript:'>Delete</a>" : "" %>
 					</div>

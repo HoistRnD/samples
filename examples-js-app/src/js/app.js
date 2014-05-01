@@ -6,8 +6,6 @@ $(function() {
 
 		Hoist.apiKey(settings.apiKey);
 
-		//Account Controller
-		window.account = new Account();
 		//Application
 		window.app = new App();
 
@@ -20,77 +18,9 @@ $(function() {
 
 	});
 
-	//Blur element tracking
-
-    window.clicky;
-
-    $(document).mousedown(function(e) {
-        clicky = $(e.target);
-    });
-
-    $(document).mouseup(function(e) {
-        clicky = null;
-    });
-
 });
 
 var App = function() {
-
-	this.focusTextarea = function() {
-
-		$("#comments-actions").show();
-		$("#preview").show();
-		if($("textarea").val() === "Write something here") {
-			$("textarea").val('');
-		}
-
-	};
-	this.blurTextarea = function(e) {
-
-		if($("textarea").val() == '') { $("textarea").val('Write something here'); }
-		if($(e.relatedTarget).attr("id") === "post-status" || $(clicky).hasClass("mode")) {
-
-		} else {
-			$("#comments-actions").hide();
-			$("#preview").hide();
-		}
-
-	};
-	this.changeMode = function(e) {
-
-		if($(e.target).attr("id") === "preview") {
-			$(".mode").removeClass("active");
-			$("#preview").addClass("active");
-			$("textarea").hide();
-			var c = strip($("textarea").val());
-			$("#content-preview").show().html(marked(strip($("textarea").val())));
-		} else {
-			$(".mode").removeClass("active");
-			$("#write").addClass("active");
-			$("textarea").show();
-			$("#content-preview").hide().html('');
-		}
-
-	};
-	this.postStatus = function() {
-
-		var content = $("textarea").val();
-		if(content == "") return;
-		$("textarea").val("Write something here");
-
-		var post = {
-			text: strip(content),
-			media: "",
-			ownerId: app.member.id
-		};
-
-		app._posts.post(post);
-		app.drawPost(post);
-
-		$("#comments-actions").hide();
-		$("#preview").hide();
-
-	};
 
 	this.logout = function() {
 		Hoist.logout(function() {
@@ -98,81 +28,9 @@ var App = function() {
 		});
 	};
 
-	this.getUser = function(id) {
-
-		var user = _.find(this.members, function(m) {
-			return m.id === id;
-		});
-		return user;
-
-	};
-
-	this.loadPosts = function(success) {
-
-		app._posts.get(function(res) {
-			//Store the posts in the app
-			app.posts = res;
-			$(".loading").remove();
-			//Loop through the posts to draw them
-			_.each(res, function(r) {
-				app.drawPost(r);
-			}, this);
-			success();
-		});
-
-	};
-
-	this.drawPost = function(post) {
-
-		//making it one level deep to make underscore templates easier
-		//to work with
-		post.post = post;
-		post.post.markedDownText = marked(post.post.text);
-		//Get the user from the members array
-		post.user = this.getUser(post.ownerId) || {};
-		post.isEditable = post.ownerId === app.member.id;
-
-		var template = _.template($("#post").html());
-		var post_html = template(post);
-		$("#content-placeholder").prepend(post_html);
-
-	};
-
-	this.editStatus = function() {
-
-		var id = $(this).data("post");
-		var post =_(app.posts).where({_id: id})[0];
-		var el = $(".media[data-post='" + id + "'] .post-content");
-		var editPostTemplate = _.template($("#edit_post").html());
-		el.html(editPostTemplate({post: post.text}));
-
-
-		//on edit
-			//add an 'edited' class
-		//on blur
-			//if it hasn't changed, then kill the save
-			//if it has changed, then do nothing
-		//on save
-			//save it
-		//on cancel
-			//revert it
-
-
-	};
-
-	this.deleteStatus = function() {
-
-		var c = confirm("Are you sure you want to delete this post?");
-		if(c) {
-			//get the id
-			var id = $(this).data("post");
-			//delete the post
-			$(".media[data-post='"+ id +"']").remove();
-			//delete from the app
-			app._posts.remove(id);
-
-		}
-
+	//Methods
+	this.methodName = function() {
+		console.log("Running an application Method");
 	};
 
 
