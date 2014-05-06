@@ -4,8 +4,8 @@ Find differences in the invoices that are sent to Xero.  A exmaple of what can b
 
 ## Setup
 
-- Create Public Xero Connector
-- Add Setting `connectorKey` to Enviorment
+- Create Public Xero Connector in Hoist Portal
+- Add Setting `connectorKey` to Environment
 - Upload Files
 - Have Fun!!!
 
