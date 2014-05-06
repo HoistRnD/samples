@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="StyleSheet1.css" type="text/css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+
+    <script type="text/javascript" src="invoicediffV2.js"></script>
+    <script type="text/javascript" src="hoist.js"></script> <!--    <script type="text/javascript" src="//code.hoi.io/hoist.js"> </script>-->
+    <script type="text/javascript" src="invoicediff.compare.js"></script>
+    
+    <script type="text/javascript" src="//use.typekit.net/jpk1gkl.js"></script>
+    <script type="text/javascript"> try { Typekit.load(); } catch (e) { }</script>
+</head>
+
+<body>
+
+    <div class="masterDiv">
+
+        <div class="header">
+            <div class="headerLogo">
+            </div>
+            <label class="headerLogout">
+                Logout
+            </label>
+        </div>
+
+        <div class="addInvoice">
+            <label class="maxThreeMessage" id="maxThree" hidden="hidden">You may only compare three invoices at a time</label>
+            
+            <button id="addInvoiceButton" rel="#addInvoice" class="addInvoiceButton" hidden="hidden" name="callModal">Add Invoice</button>
+        </div>
+
+       <div class="removeButtonsDiv">
+            <div id="table1" class="btn1Div"  hidden="hidden" ><button id="removeT1" class="removeButton">X</button></div>
+            
+            <div id="table2" class="btn2Div" hidden="hidden">
+                <div style="display:inline; padding-right:235px;"><button id="removeT2_1" class="removeButton">X</button></div>
+                <div style="display:inline; padding-right:27px;"><button id="removeT2_2" class="removeButton">X</button></div>
+            </div>
+            
+            <div id="table3" class="btn3Div" hidden="hidden">
+                <div style="display:inline; padding-right:192px;" ><button id="removeT3_1" class="removeButton">X</button></div>
+                <div style="display:inline; padding-right:190px;" ><button id="removeT3_2" class="removeButton">X</button></div>
+                <div style="display:inline; padding-right:27px;" ><button id="removeT3_3" class="removeButton">X</button></div>
+            </div>
+        </div>
+
+        <div class="getStarted" id="getStarted">
+            <div id="box"></div>
+            <div class="bubble" id="bubble">
+                <label class="getStarted">Get started</label>
+                by adding an invoice to compare
+            </div>
+            <div>
+                <br />
+                <p>
+                    <label id="loadingMessage"><b>Loading Invoices...</b></label>
+                    <button class="modalInput" id="modalInput" hidden="hidden" name="callModal">Add Invoice</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="bgCover">&nbsp;</div>
+
+    <div class="overlayBox modal">
+        <div class="closeDiv"></div>
+        <button class="close closeButton" id="closeLink">x</button>
+        <div class="insideModal">
+            <label class="getStarted">Set the invoice</label>
+            that you would
+            <br />
+            like to compare
+            <br />
+
+        </div>
+        <div>
+
+            <input type="radio" id="rec" name="option" value="Receivable" class="radioBtn" checked="checked" /><label class="radioLabel">Receivable</label>
+            <input type="radio" id="pay" name="option" value="Payable" class="radioBtn" /><label class="radioLabel">Payable</label>
+            <br />
+        </div>
+
+        <div>
+            <br />
+            <input type="text" id="invoices" class="ddInvoices" placeholder="Search Invoices" />
+            <button class="loadAll">Load All Invoices</button>
+        </div>
+
+        <div>
+            <br />
+            <button class="close" id="Button1">Use this invoice </button>
+        </div>
+    </div>
+
+    <script>
+        
+    </script>
+
+    <script id="tableTemplate" type="text/template">
+        <table class="tableInvoice" id="invTable">
+        {{#tableData}}
+        <thead class="tableHead">
+            <tr class="tableHeader">
+                <th class="itemisedCosts topLeft">Itemised Costs</th>
+                <th colspan="2" class="tableCell col3 borderRight topRight">{{InvoiceName1}}</th>
+            </tr>
+        </thead>
+        {{#Compare}}
+            <tr class="tableBody">
+                <td class="tableCell itemisedCosts borderLeft">{{CostsName}}</td>
+                <td class="tableCell colTable1">{{value1}}</td>
+                <td class="tableCell  borderRight col3""><div class="compDiv">{{comp}}</div></td>
+            </tr>
+        {{/Compare}}
+            <tr class="tableFooter">
+                <td class="itemisedCosts footerTotal borderLeft">Total</td>
+                <td class="colTable1">{{Total1}}</td>
+                <td class="col3 borderRight" ></td>
+            </tr>
+        {{/tableData}}
+        </table>
+    </script>
+
+    <script id="tableTemplate2" type="text/template">
+        <table class="tableInvoice" id="invTable">
+
+        {{#tableData}}
+        <thead class="tableHead">
+            <tr class="tableHeader">
+                <th class="col1T2 topLeft">Itemised Costs</th>
+                <th colspan="2" class="tableCell">{{InvoiceName1}}</th>
+                <th colspan="2" class="tableCell col3 borderRight topRight">{{InvoiceName2}}</th>
+            </tr>
+        </thead>
+        {{#Compare}}
+            <tr class="tableBody">
+                <td class="tableCell col1T2 borderLeft">{{CostsName}}</td>
+                <td class="tableCell col2" >${{value1}}</td>
+                <td class="tableCell"><div class="compDiv">{{comp}}</div></td>
+                <td class="tableCell col2">${{value2}}</td>
+                <td class="tableCell col3"><div class="compDiv">{{comp2}}</div></td> 
+            </tr>
+        {{/Compare}}
+            <tr class="tableFooter">
+                <td class="col1T2 footerTotal borderLeft">Total</td>
+                <td class="col2" >{{Total1}}</td>
+                <td></td>
+                <td class="col2" >{{Total2}}</td>
+                <td class="col3 borderRight" ></td>
+            </tr>
+        {{/tableData}}
+        </table>
+    </script>
+
+    <script id="tableTemplate3" type="text/template">
+        <table class="tableInvoice" id="invTable">
+        {{#tableData}}
+        <thead class="tableHead">
+            <tr class="tableHeader">
+                <th class="colT3 topLeft">Itemised Costs</th>
+                <th colspan="2" class="tableCell">{{InvoiceName1}}</th>
+                <th colspan="2" class="tableCell">{{InvoiceName2}}</th>
+                <th colspan="2" class="tableCell col3 borderRight topRight">{{InvoiceName3}}</th>
+                
+            </tr>
+        </thead>
+        {{#Compare}}
+            <tr class="tableBody">
+                <td class="tableCell colT3 borderLeft">{{CostsName}}</td>
+                <td class="tableCell colTable3" >${{value1}}</td>
+                <td class="tableCell col3"><div class="compDiv">{{comp}}</div></td>
+                <td class="tableCell colTable3">${{value2}}</td>
+                <td class="tableCell col3"><div class="compDiv">{{comp2}}</div></td> 
+                <td class="tableCell colTable3">${{value3}}</td>
+                <td class="tableCell col3"><div class="compDiv">{{comp3}}</div></td> 
+            </tr>
+        {{/Compare}}
+            <tr class="tableFooter">
+                <td class="colT3 footerTotal borderLeft">Total</td>
+                <td class="colTable3" >{{Total1}}</td>
+                <td/>
+                <td class="colTable3" >{{Total2}}</td>
+                <td/>
+                <td class="colTable3" >{{Total3}}</td>
+                <td class="col3 borderRight" />
+            </tr>
+        {{/tableData}}
+        </table>
+    </script>
+</body>
+</html>
+
