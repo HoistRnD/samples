@@ -3,14 +3,11 @@
 <head>
 	<title>Hurtle</title>
 	<link href="./css/hurtle.min.css" rel="stylesheet" />
-	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" />
 </head>
 
 <body>
 
 <div id="content">
-
-
 </div>
 
 <script type="text/template" id="login">
@@ -85,14 +82,14 @@
 
 <script type="text/template" id="post">
 	<div class="media attribution" data-post="<%= post._id %>">
-		<a class="img profile" data-profile="<%= user.id %>">
+		<a class="img profile">
+			<img src="https://file.hoi.io/<%-post.user.emailAddress%>?hoist-auth-key=<%-key%>" />
 		</a>
 		<div class="bd">
 			<div class="comment">
 				<div class="meta">
 					<a class="name"><%- user.name %></a>
 					<div class="methods">
-						<a href="#<%=post._id" class="action-link">Link</a>
 						<%= (post.isEditable) ?
 							"<a class='js-delete-post action-link' data-post='" + post._id + "' href='javascript:'>Delete</a>" : "" %>
 					</div>
@@ -106,8 +103,16 @@
 	</div>
 </script>
 
-<script src="./js/hurtle.min.js"> </script>
+<!--<script src="./js/hurtle.min.js"> </script>-->
 
+<script src="./src/js/jquery-2.0.3.min.js"> </script>
+<script src="./src/js/underscore.min.js"> </script>
+<script src="./src/js/marked.js"> </script>
+<script src="./src/js/hoist.js"> </script>
+<script src="./src/js/app.js"> </script>
+<script src="./src/js/account.js"> </script>
+
+<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" />
 </body>
 
 </html>
